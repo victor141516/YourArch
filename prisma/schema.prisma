@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model SubtitlePhrase {
+  id         Int      @id @default(autoincrement())
+  from       String   @db.VarChar(255)
+  duration   String   @db.VarChar(255)
+  lang       String   @db.VarChar(2)
+  text       String   @db.VarChar(255)
+  videoId    String   @db.VarChar(255)
+  channelId  String   @db.VarChar(255)
+  videoTitle String   @db.VarChar(255)
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([videoId], map: "SubtitlePhrase_videoId")
+}

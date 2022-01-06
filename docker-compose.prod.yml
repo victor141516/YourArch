@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  yourarch:
+    image: victor141516/yourarch
+    networks:
+      - default
+      - caddywork
+    build: .
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres?schema=public
+  
+  postgres:
+    image: postgres
+    networks:
+      - default
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./database:/var/lib/postgresql/data/pgdata
+
+
+networks:
+  caddywork:
+    external: true
+    name: caddywork
+
+# First time run: `docker-compose -f docker-compose.local.yml exec yourarch npm run prisma:migrate -- --schema node_modules/.prisma/client/schema.prisma`

@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  yourarch:
+    image: victor141516/yourarch
+    build: .
+    ports:
+      - 43000:3000
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres?schema=public
+  
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - 5432:5432
+    volumes:
+      - ./database:/var/lib/postgresql/data/pgdata
+
+
+# First time run: `docker-compose -f docker-compose.local.yml exec yourarch npm run prisma:migrate -- --schema node_modules/.prisma/client/schema.prisma`
