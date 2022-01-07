@@ -14,7 +14,7 @@ app.post('/api/items', async (req, res) => {
       (req.body as ChromeExtensionPayload).map(async ({ channelId, videoId, videoTitle }) => {
         console.log('Checking video:', videoId)
         const subtitles = await getSubtitles({ videoID: videoId, lang: langPriority as lang[] }).catch((e) => {
-          if (e.response.status === 429) {
+          if (e.status === 429) {
             console.warn('YouTube throttled us. We should throttle too')
           } else {
             console.error('Error obtaining subtitles for:', videoId, e)
