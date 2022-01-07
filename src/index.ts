@@ -13,8 +13,10 @@ app.post('/api/items', async (req, res) => {
     await Promise.all(
       (req.body as ChromeExtensionPayload).map(async ({ channelId, videoId, videoTitle }) => {
         console.log('Checking video:', videoId)
-        const subtitles = await getSubtitles({ videoID: videoId, lang: langPriority as lang[] }).catch(() => [])
-        if (subtitles.length === 0) console.log('Error obtaining subtitles for:', videoId)
+        const subtitles = await getSubtitles({ videoID: videoId, lang: langPriority as lang[] }).catch((e) => {
+          console.log('Error obtaining subtitles for:', videoId, e)
+          return []
+        })
         return subtitles.map(({ start, dur, text, lang }) => {
           return {
             channelId: channelId,
