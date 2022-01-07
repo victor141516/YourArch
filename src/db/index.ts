@@ -17,7 +17,10 @@ export async function addSubtitlePhrases(items: SubtitlePhrase[]) {
 }
 
 export async function search(term: string) {
-  return prisma.subtitlePhrase.findMany({ where: { text: { contains: term, mode: 'insensitive' } } })
+  return prisma.subtitlePhrase.findMany({
+    where: { text: { contains: term, mode: 'insensitive' } },
+    orderBy: { createdAt: 'desc' },
+  })
 }
 
 export async function isVideoScraped(params: { videoId: string }) {
