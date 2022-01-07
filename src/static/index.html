@@ -17,14 +17,19 @@
       </form>
       <div id="results" v-for="video in results">
         <div class="flex h-48 mb-4">
-          <a class="flex" :href="`https://www.youtube.com/watch?v=${video.videoId}&t=${video.from}s`">
+          <a class="flex" target="_blank" :href="`https://www.youtube.com/watch?v=${video.videoId}&t=${video.from}s`">
             <img :src="`https://img.youtube.com/vi/${video.videoId}/0.jpg`" />
           </a>
           <div class="flex flex-col ml-4 my-auto pb-4">
-            <a class="font-bold text-lg" :href="`https://www.youtube.com/watch?v=${video.videoId}&t=${video.from}s`"
+            <a
+              class="font-bold text-lg"
+              target="_blank"
+              :href="`https://www.youtube.com/watch?v=${video.videoId}&t=${video.from}s`"
               >{{video.videoTitle}}</a
             >
-            <a class="font-bold text-sm" :href="`https://www.youtube.com${video.channelId}`">{{video.channelId}}</a>
+            <a class="font-bold text-sm" target="_blank" :href="`https://www.youtube.com${video.channelId}`"
+              >{{video.channelId}}</a
+            >
             <cite>{{video.text}}</cite>
           </div>
         </div>
@@ -32,17 +37,6 @@
     </div>
 
     <script>
-      // {
-      //   id: 2,
-      //   from: '2.34',
-      //   duration: '4.979',
-      //   lang: 'es',
-      //   text: 'a andalucía management ya frank por la',
-      //   videoId: 'WcHBjBopK3E',
-      //   channelId: '/c/juanrallo',
-      //   videoTitle: '¿Cuáles son las causas de la inflación?',
-      //   createdAt: '2022-01-07T13:21:00.587Z',
-      // }
       const { createApp, ref } = Vue
       const application = createApp({
         setup() {
