@@ -81,6 +81,8 @@ export class JobQueue {
             const dbRows = await getDbRows(currentJob).catch((e) => {
               if (e instanceof YouTubeThrottlingUsJobQueueError) {
                 delay = Math.max(MIN_DELAY, delay * 2)
+              } else {
+                this.jobs.splice(0, 1) // pop first item
               }
             })
             if (dbRows) {
