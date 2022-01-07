@@ -18,11 +18,7 @@ app.post('/api/items', async (req, res) => {
 
 app.get('/api/search', async (req, res) => {
   const results = await search(req.query.q as string)
-  res.json(
-    results.map((r) => {
-      return `https://www.youtube.com/watch?v=${r.videoId}&t=${r.from}s`
-    }),
-  )
+  res.json(results)
 })
 
 app.listen(3000, () => {

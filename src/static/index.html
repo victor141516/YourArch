@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <script src="https://unpkg.com/vue@next"></script>
+    <title>YourArchive Alpha</title>
+  </head>
+  <body>
+    <div id="app">
+      <form @submit="onSubmit">
+        <input type="text" name="search-term" />
+        <button>Search</button>
+      </form>
+      <div id="results">{{results}}</div>
+    </div>
+
+    <script>
+      const { createApp, ref } = Vue
+      const application = createApp({
+        setup() {
+          const results = ref([])
+          const getVideos = (term) =>
+            fetch(`https://yourarch-ingestor.viti.site/api/search?q=${encodeURIComponent(term)}`, {
+              mode: 'cors',
+            }).then((r) => r.json())
+
+          return {
+            onSubmit: (v) => {
+              const searchTerm = v.target[0].value
+              getVideos(searchTerm).then((res) => (results.value = res))
+              v.preventDefault()
+            },
+            results,
+          }
+        },
+      })
+      application.mount('#app')
+    </script>
+  </body>
+</html>

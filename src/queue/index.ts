@@ -73,7 +73,7 @@ export class JobQueue {
           console.log('No more jobs to run')
         } else {
           const currentJob = this.jobs[0]
-          console.log('Checking video:', currentJob.channelId)
+          console.log('Checking video:', currentJob.videoId)
           if (await isVideoScraped({ videoId: currentJob.videoId })) {
             console.log('Video already scraped:', currentJob.videoId)
           } else {
