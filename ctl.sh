@@ -13,6 +13,10 @@ elif [ "$2" = "build" ]; then
   run="$compose_base build yourarch"
 elif [ "$2" = "ps" ]; then
   run="$compose_base ps"
+elif [ "$2" = "restart" ]; then
+  run="$compose_base restart -- yourarch"
+elif [ "$2" = "sh" ]; then
+  run="$compose_base exec yourarch sh"
 elif [ "$2" = "migrate" ]; then
   run="$compose_base exec yourarch npm run prisma:migrate -- --schema node_modules/.prisma/client/schema.prisma"
 elif [ "$2" = "psql" ]; then
@@ -23,4 +27,5 @@ elif [ "$2" = "pull" ]; then
   run="git pull"
 fi
 
+echo $run
 eval $run

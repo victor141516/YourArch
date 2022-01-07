@@ -1,42 +1,28 @@
 import express from 'express'
-import { getSubtitles, lang } from 'youtube-captions-scraper'
 
 import { ChromeExtensionPayload } from './@types/api'
-import { langPriority } from './config'
-import { addSubtitlePhrases } from './db'
+import { search } from './db'
+import { JobQueue } from './queue'
 
+const queue = new JobQueue()
+queue.run()
 const app = express()
 app.use(express.json())
 
 app.post('/api/items', async (req, res) => {
-  const result = (
-    await Promise.all(
-      (req.body as ChromeExtensionPayload).map(async ({ channelId, videoId, videoTitle }) => {
-        console.log('Checking video:', videoId)
-        const subtitles = await getSubtitles({ videoID: videoId, lang: langPriority as lang[] }).catch((e) => {
-          if (e.status === 429) {
-            console.warn('YouTube throttled us. We should throttle too')
-          } else {
-            console.error('Error obtaining subtitles for:', videoId, e)
-          }
-          return []
-        })
-        return subtitles.map(({ start, dur, text, lang }) => {
-          return {
-            channelId: channelId,
-            videoId: videoId,
-            videoTitle: videoTitle,
-            from: start,
-            duration: dur,
-            text: text,
-            lang: lang,
-          }
-        })
-      }),
-    )
-  ).flat()
-  addSubtitlePhrases(result)
-  res.json({ ok: true, result })
+  ;(req.body as ChromeExtensionPayload).forEach(({ channelId, videoId, videoTitle }) => {
+    queue.add({ channelId, videoId, videoTitle })
+  })
+  res.json({ ok: true })
+})
+
+app.get('/api/search', async (req, res) => {
+  const results = await search(req.query.q as string)
+  res.json(
+    results.map((r) => {
+      return `https://www.youtube.com/watch?v=${r.videoId}&t=${r.from}s`
+    }),
+  )
 })
 
 app.listen(3000, () => {

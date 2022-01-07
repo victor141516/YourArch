@@ -10,7 +10,7 @@
     "run-compiled": "node --experimental-specifier-resolution=node",
     "lint": "eslint src/**",
     "lint:tsc": "tsc --noEmit",
-    "prisma:generate": "npx prisma generate",
+    "prisma:generate": "yes | npx prisma generate",
     "prisma:infer": "yes | npx prisma db pull",
     "prisma:migrate": "yes | npx prisma db push"
   },

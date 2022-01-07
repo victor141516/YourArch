@@ -2,11 +2,16 @@ version: "3.9"
 services:
   yourarch:
     image: victor141516/yourarch
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
     ports:
       - 43000:3000
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres?schema=public
+    volumes:
+      - ".:/app"
   
   postgres:
     image: postgres
