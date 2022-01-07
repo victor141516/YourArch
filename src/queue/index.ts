@@ -66,6 +66,8 @@ export class JobQueue {
       return
     }
 
+    const popJob = () => this.jobs.splice(0, 1)
+
     let delay = MIN_DELAY
     const processItem = () => {
       setTimeout(async () => {
@@ -75,19 +77,20 @@ export class JobQueue {
           const currentJob = this.jobs[0]
           console.log('Checking video:', currentJob.videoId)
           if (await isVideoScraped({ videoId: currentJob.videoId })) {
-            this.jobs.splice(0, 1) // pop first item
+            popJob()
             console.log('Video already scraped:', currentJob.videoId)
           } else {
             const dbRows = await getDbRows(currentJob).catch((e) => {
               if (e instanceof YouTubeThrottlingUsJobQueueError) {
                 delay = Math.max(MIN_DELAY, delay * 2)
+                console.warn("We're being throttled. Backoff:", delay)
               } else {
-                this.jobs.splice(0, 1) // pop first item
+                popJob()
               }
             })
             if (dbRows) {
               await addSubtitlePhrases(dbRows)
-              this.jobs.splice(0, 1) // pop first item
+              popJob()
             }
           }
         }
