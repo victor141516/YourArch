@@ -27,4 +27,4 @@ networks:
     external: true
     name: caddywork
 
-# First time run: `docker-compose -f docker-compose.local.yml exec yourarch npm run prisma:migrate -- --schema node_modules/.prisma/client/schema.prisma`
+# First time run: `docker-compose -f docker-compose.base.yml exec yourarch npm run prisma:migrate -- --schema node_modules/.prisma/client/schema.prisma`
