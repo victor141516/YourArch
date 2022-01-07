@@ -23,6 +23,8 @@ elif [ "$2" = "psql" ]; then
   run="$compose_base exec postgres psql -h127.0.0.1 -Upostgres postgres"
 elif [ "$2" = "rm" ]; then
   run="sudo rm -rf database"
+elif [ "$2" = "db-777" ]; then
+  run="sudo chmod -R 777 database"
 elif [ "$2" = "pull" ]; then
   run="git pull"
 fi
