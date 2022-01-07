@@ -75,6 +75,7 @@ export class JobQueue {
           const currentJob = this.jobs[0]
           console.log('Checking video:', currentJob.videoId)
           if (await isVideoScraped({ videoId: currentJob.videoId })) {
+            this.jobs.splice(0, 1) // pop first item
             console.log('Video already scraped:', currentJob.videoId)
           } else {
             const dbRows = await getDbRows(currentJob).catch((e) => {
