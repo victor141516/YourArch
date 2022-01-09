@@ -1,3 +1,4 @@
+import { text } from 'express'
 import pino from 'pino'
 
 import { addSubtitlePhrases, addVideo, isVideoScraped } from '../db'
@@ -48,11 +49,13 @@ export class JobQueue {
                 delay = Math.max(MIN_DELAY, delay * 2)
                 logger.warn("We're being throttled. Backoff: %d", delay)
               } else {
-                logger.warn(
-                  'Unknown error <%d>: %s',
-                  (e as UnknownSubtitleError).args[0].status,
-                  await (e as UnknownSubtitleError).args[0].text(),
-                )
+                const status = (e as UnknownSubtitleError)?.args?.[0]?.status
+                const text = await (e as UnknownSubtitleError)?.args?.[0]?.text()
+                if (status && text) {
+                  logger.warn('Unknown error (%s) <%d>: %s', e.constructor.name, status, text)
+                } else {
+                  logger.warn('Unknown error (%s): %s', e.constructor.name, e)
+                }
                 popJob()
               }
             })
