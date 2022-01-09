@@ -26,10 +26,12 @@
   "dependencies": {
     "@prisma/client": "^3.7.0",
     "express": "^4.17.2",
+    "html-entities": "^2.3.2",
     "jsdom": "^17.0.0",
     "node-fetch": "^3.0.0",
     "pg": "^8.4.0",
     "reflect-metadata": "^0.1.10",
+    "striptags": "^3.2.0",
     "youtube-captions-scraper": "github:victor141516/youtube-captions-scraper"
   },
   "devDependencies": {

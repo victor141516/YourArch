@@ -1,7 +1,5 @@
-import { getSubtitles, lang } from 'youtube-captions-scraper'
-
-import { langPriority } from '../config'
 import { addSubtitlePhrases, isVideoScraped } from '../db'
+import { getSubtitles } from '../subtitles'
 
 const MIN_DELAY = 5_000
 
@@ -23,14 +21,14 @@ async function getDbRows({
   channelId: string
   videoTitle: string
 }) {
-  const subtitles = await getSubtitles({ videoID: videoId, lang: langPriority as lang[] }).catch((e) => {
+  const { lines, lang } = await getSubtitles({ videoID: videoId }).catch((e) => {
     if (e.status === 429) {
       throw new YouTubeThrottlingUsJobQueueError()
     } else {
       throw new UnknownJobQueueError()
     }
   })
-  return subtitles.map(({ start, dur, text, lang }) => {
+  return lines.map(({ start, dur, text }) => {
     return {
       channelId: channelId,
       videoId: videoId,
