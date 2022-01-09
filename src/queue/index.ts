@@ -44,7 +44,7 @@ export class JobQueue {
             popJob()
             logger.info('Video already scraped: %s', currentJob.videoId)
           } else {
-            const dbRows = await getSubtitles({ videoId: currentJob.channelId }).catch(async (e) => {
+            const dbRows = await getSubtitles({ videoId: currentJob.videoId }).catch(async (e) => {
               if (e instanceof ThrottlingSubtitleError) {
                 delay = Math.max(MIN_DELAY, delay * 2)
                 logger.warn("We're being throttled. Backoff: %d", delay)
