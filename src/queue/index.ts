@@ -1,7 +1,7 @@
 import pino from 'pino'
 
 import { addSubtitlePhrases, addVideo, isVideoScraped } from '../db'
-import { getSubtitles, ThrottlingSubtitleError } from '../subtitles'
+import { getSubtitles, ThrottlingSubtitleError, UnknownSubtitleError } from '../subtitles'
 
 const logger = pino()
 const MIN_DELAY = 5_000
@@ -43,12 +43,16 @@ export class JobQueue {
             popJob()
             logger.info('Video already scraped: %s', currentJob.videoId)
           } else {
-            const dbRows = await getSubtitles({ videoId: currentJob.channelId }).catch((e) => {
+            const dbRows = await getSubtitles({ videoId: currentJob.channelId }).catch(async (e) => {
               if (e instanceof ThrottlingSubtitleError) {
                 delay = Math.max(MIN_DELAY, delay * 2)
                 logger.warn("We're being throttled. Backoff: %d", delay)
               } else {
-                logger.warn('Unknown error: %o', e)
+                logger.warn(
+                  'Unknown error <%d>: %s',
+                  (e as UnknownSubtitleError).args[0].status,
+                  await (e as UnknownSubtitleError).args[0].text(),
+                )
                 popJob()
               }
             })
