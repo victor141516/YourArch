@@ -1,8 +1,10 @@
+import pino from 'pino'
 import PrismaLib, { SubtitlePhrase, Video } from '@prisma/client'
 const { PrismaClient } = PrismaLib
 
 type CopyWithPartial<T, K extends keyof T> = Omit<T, K> & Partial<T>
 
+const logger = pino()
 const prisma = new PrismaClient()
 
 export async function close() {
@@ -14,7 +16,9 @@ export async function addVideo(video: CopyWithPartial<Video, 'id' | 'createdAt'>
 }
 
 export async function addSubtitlePhrases(items: CopyWithPartial<SubtitlePhrase, 'id' | 'createdAt'>[]) {
-  return prisma.subtitlePhrase.createMany({ data: items })
+  return prisma.subtitlePhrase.createMany({ data: items }).then(({ count }) => {
+    logger.info('%d new subtitle phrases saved', count)
+  })
 }
 
 export async function search(term: string) {
