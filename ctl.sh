@@ -18,7 +18,7 @@ elif [ "$2" = "restart" ]; then
 elif [ "$2" = "sh" ]; then
   run="$compose_base exec yourarch sh"
 elif [ "$2" = "migrate" ]; then
-  run="$compose_base run --rm yourarch npm run prisma:migrate -- --schema node_modules/.prisma/client/schema.prisma"
+  run="$compose_base run --rm --entrypoint='' yourarch npm run prisma:migrate -- --schema node_modules/.prisma/client/schema.prisma"
 elif [ "$2" = "psql" ]; then
   run="$compose_base exec postgres psql -h127.0.0.1 -Upostgres postgres"
 elif [ "$2" = "rm" ]; then
