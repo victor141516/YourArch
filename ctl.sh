@@ -4,7 +4,7 @@ env=$1
 compose_base="docker-compose -f docker-compose.base.yml -f docker-compose.$env.yml"
 
 if [ "$2" = "logs" ]; then
-  run="$compose_base logs -f yourarch"
+  run="$compose_base logs --no-log-prefix -f yourarch"
 elif [ "$2" = "down" ]; then
   run="$compose_base down"
 elif [ "$2" = "up" ]; then

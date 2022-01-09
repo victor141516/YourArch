@@ -1,6 +1,9 @@
+import pino from 'pino'
+
 import { addSubtitlePhrases, addVideo, isVideoScraped } from '../db'
 import { getSubtitles, ThrottlingSubtitleError } from '../subtitles'
 
+const logger = pino()
 const MIN_DELAY = 5_000
 
 export class JobQueue {
@@ -22,7 +25,7 @@ export class JobQueue {
 
   run() {
     if (this.nextJobHandler !== null) {
-      console.warn('Queue already running')
+      logger.warn('Queue already running')
       return
     }
 
@@ -32,18 +35,18 @@ export class JobQueue {
     const processItem = () => {
       setTimeout(async () => {
         if (this.jobs.length === 0) {
-          console.log('No more jobs to run')
+          logger.info('No more jobs to run')
         } else {
           const currentJob = this.jobs[0]
-          console.log('Checking video:', currentJob.videoId)
+          logger.info('Checking video: %s', currentJob.videoId)
           if (await isVideoScraped({ videoId: currentJob.videoId })) {
             popJob()
-            console.log('Video already scraped:', currentJob.videoId)
+            logger.info('Video already scraped: %s', currentJob.videoId)
           } else {
             const dbRows = await getSubtitles({ videoId: currentJob.channelId }).catch((e) => {
               if (e instanceof ThrottlingSubtitleError) {
                 delay = Math.max(MIN_DELAY, delay * 2)
-                console.warn("We're being throttled. Backoff:", delay)
+                logger.warn("We're being throttled. Backoff: %d", delay)
               } else {
                 popJob()
               }

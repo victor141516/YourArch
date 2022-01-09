@@ -6,7 +6,7 @@
     <script src="https://unpkg.com/vue@next"></script>
     <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.classless.min.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>YourArchive Alpha</title>
+    <title>YourArchive α</title>
   </head>
 
   <body>
@@ -46,7 +46,7 @@
         setup() {
           const results = ref([])
           const getVideos = (term) =>
-            fetch(`http://localhost:43000/api/search?q=${encodeURIComponent(term)}`, {
+            fetch(`https://yourarch-ingestor.viti.site/api/search?q=${encodeURIComponent(term)}`, {
               mode: 'cors',
             }).then((r) => r.json())
 

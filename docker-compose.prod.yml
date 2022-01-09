@@ -2,6 +2,7 @@ version: "3.9"
 services:
   yourarch:
     image: victor141516/yourarch
+    restart: unless-stopped
     networks:
       - default
       - caddywork
@@ -11,6 +12,7 @@ services:
   
   postgres:
     image: postgres
+    restart: unless-stopped
     networks:
       - default
     environment:
@@ -26,5 +28,3 @@ networks:
   caddywork:
     external: true
     name: caddywork
-
-# First time run: `docker-compose -f docker-compose.base.yml exec yourarch npm run prisma:migrate -- --schema node_modules/.prisma/client/schema.prisma`

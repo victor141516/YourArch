@@ -1,12 +1,19 @@
 import express from 'express'
+import pino from 'pino'
+import pinoExpress from 'pino-http'
 
 import { ChromeExtensionPayload } from './@types/api'
 import { search } from './db'
 import { JobQueue } from './queue'
 
+const logger = pino()
+
 const queue = new JobQueue()
 queue.run()
+
 const app = express()
+app.use(express.static('./src/static'))
+app.use(pinoExpress())
 app.use(
   express.json({
     verify: (_, res, buff) => {
@@ -48,5 +55,5 @@ app.get('/api/search', async (req, res) => {
 })
 
 app.listen(3000, () => {
-  console.log('Listening on 3000')
+  logger.info('Listening on 3000')
 })
