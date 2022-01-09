@@ -48,6 +48,7 @@ export class JobQueue {
                 delay = Math.max(MIN_DELAY, delay * 2)
                 logger.warn("We're being throttled. Backoff: %d", delay)
               } else {
+                logger.warn('Unknown error: %o', e)
                 popJob()
               }
             })
