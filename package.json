@@ -1,5 +1,5 @@
 {
-  "name": "ts-boilerplate",
+  "name": "yourarch",
   "version": "1.0.0",
   "main": "dist/index.js",
   "license": "UNLICENSED",
@@ -10,7 +10,7 @@
     "run-compiled": "node --experimental-specifier-resolution=node",
     "lint": "eslint src/**",
     "lint:tsc": "tsc --noEmit",
-    "prisma:generate": "npx prisma generate",
+    "prisma:generate": "yes | npx prisma generate",
     "prisma:infer": "yes | npx prisma db pull",
     "prisma:migrate": "yes | npx prisma db push"
   },
@@ -26,10 +26,14 @@
   "dependencies": {
     "@prisma/client": "^3.7.0",
     "express": "^4.17.2",
+    "html-entities": "^2.3.2",
     "jsdom": "^17.0.0",
     "node-fetch": "^3.0.0",
     "pg": "^8.4.0",
+    "pino": "^7.6.2",
+    "pino-http": "^6.5.0",
     "reflect-metadata": "^0.1.10",
+    "striptags": "^3.2.0",
     "youtube-captions-scraper": "github:victor141516/youtube-captions-scraper"
   },
   "devDependencies": {

@@ -15,6 +15,3 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - ./database:/var/lib/postgresql/data/pgdata
-
-
-# First time run: `docker-compose -f docker-compose.base.yml exec yourarch npm run prisma:migrate -- --schema node_modules/.prisma/client/schema.prisma`
