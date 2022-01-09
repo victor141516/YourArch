@@ -1,13 +1,33 @@
-import console from 'console'
 import { decode } from 'html-entities'
-import fetch from 'node-fetch'
+import fetch, { Response } from 'node-fetch'
 import striptags from 'striptags'
 
-export async function getSubtitles({ videoID, lang = [] }: { videoID: string; lang?: string[] }) {
-  const data = (await fetch(`https://youtube.com/watch?v=${videoID}`).then((r) => r.text())) as string
+export class SubtitleError {
+  args: any[]
+  constructor(...args: any[]) {
+    this.args = args
+  }
+}
+export class ThrottlingSubtitleError extends SubtitleError {}
+export class UnknownSubtitleError extends SubtitleError {}
+
+function handleRequestError(r: Response) {
+  if (r.status === 429) {
+    throw new ThrottlingSubtitleError()
+  } else if (r.status !== 200) {
+    throw new UnknownSubtitleError(r)
+  } else {
+    return r
+  }
+}
+
+export async function getSubtitles({ videoId: videoId, lang = [] }: { videoId: string; lang?: string[] }) {
+  const data = (await fetch(`https://youtube.com/watch?v=${videoId}`)
+    .then((r) => handleRequestError(r))
+    .then((r) => r.text())) as string
 
   // * ensure we have access to captions data
-  if (!data.includes('captionTracks')) throw new Error(`Could not find captions for video: ${videoID}`)
+  if (!data.includes('captionTracks')) throw new Error(`Could not find captions for video: ${videoId}`)
 
   const regex = /({"captionTracks":.*isTranslatable":(true|false)}])/
   const [match] = regex.exec(data)!
@@ -58,7 +78,7 @@ export async function getSubtitles({ videoID, lang = [] }: { videoID: string; la
   }
 
   if (!theLang) {
-    throw new Error(`Could not find captions for ${videoID}`)
+    throw new Error(`Could not find captions for ${videoId}`)
   }
 
   const subtitle =
@@ -67,9 +87,11 @@ export async function getSubtitles({ videoID, lang = [] }: { videoID: string; la
     captionTracks.find(({ vssId }) => vssId && vssId.match(`.${theLang}`))
 
   // * ensure we have found the correct subtitle lang
-  if (!subtitle || (subtitle && !subtitle.baseUrl)) throw new Error(`Could not find ${theLang} captions for ${videoID}`)
+  if (!subtitle || (subtitle && !subtitle.baseUrl)) throw new Error(`Could not find ${theLang} captions for ${videoId}`)
 
-  const transcript = await fetch(subtitle.baseUrl).then((r) => r.text())
+  const transcript = await fetch(subtitle.baseUrl)
+    .then((r) => handleRequestError(r))
+    .then((r) => r.text())
   const lines = transcript
     .replace('<?xml version="1.0" encoding="utf-8" ?><transcript>', '')
     .replace('</transcript>', '')
@@ -91,8 +113,8 @@ export async function getSubtitles({ videoID, lang = [] }: { videoID: string; la
       const text = striptags(decodedText)
 
       return {
-        start,
-        dur,
+        from: start,
+        duration: dur,
         text,
       }
     })

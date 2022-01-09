@@ -8,15 +8,21 @@ datasource db {
 }
 
 model SubtitlePhrase {
-  id         Int      @id @default(autoincrement())
-  from       String   @db.VarChar(255)
-  duration   String   @db.VarChar(255)
-  lang       String   @db.VarChar(2)
-  text       String   @db.VarChar(255)
-  videoId    String   @db.VarChar(255)
-  channelId  String   @db.VarChar(255)
-  videoTitle String   @db.VarChar(255)
-  createdAt  DateTime @default(now()) @db.Timestamp(6)
+  id        Int      @id @default(autoincrement())
+  from      String   @db.VarChar(255)
+  duration  String   @db.VarChar(255)
+  text      String   @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  videoId   Int?
+  Video     Video?   @relation(fields: [videoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
 
-  @@index([videoId], map: "SubtitlePhrase_videoId")
+model Video {
+  id             Int              @id @default(autoincrement())
+  videoId        String?          @db.VarChar(11)
+  lang           String?          @db.VarChar(2)
+  title          String?          @db.VarChar
+  channelId      String?          @db.VarChar
+  createdAt      DateTime?        @default(now()) @db.Timestamp(6)
+  SubtitlePhrase SubtitlePhrase[]
 }

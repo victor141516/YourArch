@@ -1,45 +1,7 @@
-import { addSubtitlePhrases, isVideoScraped } from '../db'
-import { getSubtitles } from '../subtitles'
+import { addSubtitlePhrases, addVideo, isVideoScraped } from '../db'
+import { getSubtitles, ThrottlingSubtitleError } from '../subtitles'
 
 const MIN_DELAY = 5_000
-
-class JobQueueError {
-  args: any[]
-  constructor(...args: any[]) {
-    this.args = args
-  }
-}
-class YouTubeThrottlingUsJobQueueError extends JobQueueError {}
-class UnknownJobQueueError extends JobQueueError {}
-
-async function getDbRows({
-  videoId,
-  channelId,
-  videoTitle,
-}: {
-  videoId: string
-  channelId: string
-  videoTitle: string
-}) {
-  const { lines, lang } = await getSubtitles({ videoID: videoId }).catch((e) => {
-    if (e.status === 429) {
-      throw new YouTubeThrottlingUsJobQueueError()
-    } else {
-      throw new UnknownJobQueueError()
-    }
-  })
-  return lines.map(({ start, dur, text }) => {
-    return {
-      channelId: channelId,
-      videoId: videoId,
-      videoTitle: videoTitle,
-      from: start,
-      duration: dur,
-      text: text,
-      lang: lang,
-    }
-  })
-}
 
 export class JobQueue {
   private jobs: { videoId: string; channelId: string; videoTitle: string }[]
@@ -78,8 +40,8 @@ export class JobQueue {
             popJob()
             console.log('Video already scraped:', currentJob.videoId)
           } else {
-            const dbRows = await getDbRows(currentJob).catch((e) => {
-              if (e instanceof YouTubeThrottlingUsJobQueueError) {
+            const dbRows = await getSubtitles({ videoId: currentJob.channelId }).catch((e) => {
+              if (e instanceof ThrottlingSubtitleError) {
                 delay = Math.max(MIN_DELAY, delay * 2)
                 console.warn("We're being throttled. Backoff:", delay)
               } else {
@@ -87,7 +49,13 @@ export class JobQueue {
               }
             })
             if (dbRows) {
-              await addSubtitlePhrases(dbRows)
+              const video = await addVideo({
+                title: currentJob.videoTitle,
+                lang: dbRows.lang,
+                videoId: currentJob.videoId,
+                channelId: currentJob.channelId,
+              })
+              await addSubtitlePhrases(dbRows.lines.map((e) => ({ videoId: video.id, ...e })))
               popJob()
             }
           }

@@ -7,7 +7,20 @@ import { JobQueue } from './queue'
 const queue = new JobQueue()
 queue.run()
 const app = express()
-app.use(express.json())
+app.use(
+  express.json({
+    verify: (_, res, buff) => {
+      try {
+        JSON.parse(buff.toString())
+      } catch {
+        res.setHeader('Content-Type', 'application/json')
+        res.write(JSON.stringify({ ok: false, error: 'Payload must be a valid JSON' }))
+        res.end()
+        throw new (class MalformedJsonError extends Error {})()
+      }
+    },
+  }),
+)
 
 function isString(a: string | any): a is string {
   return typeof a === 'string'
