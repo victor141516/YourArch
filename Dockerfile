@@ -21,4 +21,5 @@ WORKDIR /app
 COPY --from=builder /app/dist /app/package.json /app/package-lock.json /app/
 RUN npm install --only=production
 COPY --from=builder /app/node_modules/.prisma /app/node_modules/.prisma
+COPY --from=builder /app/src/static/index.html /app/src/static/index.html
 ENTRYPOINT ["npm", "run", "run-compiled", "--", "index.js"]
