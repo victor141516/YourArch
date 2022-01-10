@@ -12,7 +12,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres?schema=public
     volumes:
       - ".:/app"
-  
+    
   postgres:
     image: postgres
     environment:
