@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  yourarch:
+    command: /app/run-clinic.sh
+    entrypoint: []
+    volumes:
+      - ./clinic:/app/.clinic
+      - ./run-clinic.sh:/app/run-clinic.sh
