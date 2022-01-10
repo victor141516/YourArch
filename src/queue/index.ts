@@ -60,6 +60,7 @@ export class JobQueue {
               }
             })
             if (dbRows) {
+              dbRows = MIN_DELAY
               const video = await addVideo({
                 title: currentJob.videoTitle,
                 lang: dbRows.lang,
