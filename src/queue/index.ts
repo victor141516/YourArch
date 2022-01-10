@@ -50,7 +50,7 @@ export class JobQueue {
                 logger.warn("We're being throttled. Backoff: %d", delay)
               } else {
                 const status = (e as UnknownSubtitleError)?.args?.[0]?.status
-                const text = await (e as UnknownSubtitleError)?.args?.[0]?.text()
+                const text = await (e as UnknownSubtitleError)?.args?.[0]?.text?.()
                 if (status && text) {
                   logger.warn('Unknown error (%s) <%d>: %s', e.constructor.name, status, text)
                 } else {
